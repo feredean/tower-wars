@@ -142,6 +142,7 @@ module.exports = function (grunt) {
       all: [
         '<%= yeoman.client %>/{app,components}/**/*.js',
         '!<%= yeoman.client %>/{app,components}/**/*.spec.js',
+        '!<%= yeoman.client %>/app/war/pathfinding-browser.js',
         '!<%= yeoman.client %>/{app,components}/**/*.mock.js'
       ],
       test: {

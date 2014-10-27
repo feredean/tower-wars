@@ -1,3 +1,5 @@
+'use strict';
+
 var Engine = (function(global){
   var doc = global.document;
   var win = global.window;
@@ -120,7 +122,7 @@ var Engine = (function(global){
    */  
   canvasTop.addEventListener('mousemove', Handlers.drawPad)
 
-  canvasTop.addEventListener('mouseleave', Handlers.erasePad)
+  canvasTop.addEventListener('mouseleave', Handlers.disablePad)
 
   canvasTop.addEventListener('mousedown', Handlers.placeTower)
 

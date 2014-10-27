@@ -1,3 +1,4 @@
+'use strict';
 
 var Handlers = {};
 
@@ -5,6 +6,10 @@ Handlers.erasePad = function() {
   Resources.ctx.top.clearRect(0, 0, Resources.width(), Resources.height())
 }
 
+Handlers.disablePad = function() {
+  Resources.pad.started = false;
+  Handlers.erasePad();
+}
 /**
  * 
  * @param {number} point mouse location x or y
@@ -32,7 +37,7 @@ Handlers.erasePad = function() {
 Handlers.getCorner = function(point, axis) {
   // transforms 43 into 40
   var normalized = Math.floor(point/10) * 10;
-
+  var corner;
   // if mouse is not on canvas draw it far far away
   if (point === 1000) {
     return;
@@ -70,6 +75,7 @@ Handlers.getCorner = function(point, axis) {
  * @param {object} event
  */  
 Handlers.drawPad = function(e) {
+  Resources.pad.started = true;
 
   var x = e.offsetX;
   var y = e.offsetY;
@@ -84,27 +90,22 @@ Handlers.drawPad = function(e) {
   if (Handlers.currentX === oX && Handlers.currentY === oY) {
     return;
   } else {
-    Resources.placeable = true;
+    Resources.pad.blockedTower = false;
     Handlers.erasePad();
-    if (Resources.placeable) {
-      Resources.ctx.top.fillStyle = 'rgba(42, 255, 50, 0.2)';
-    } else {
+    if (Resources.pad.blockedTower) {
       Resources.ctx.top.fillStyle = 'rgba(255, 50, 42, 0.2)';
+    } else {
+      Resources.ctx.top.fillStyle = 'rgba(42, 255, 50, 0.2)';
     }
     Resources.blocks.forEach(function(block) {
       if ((block[0] === oX && block[1] ===oY) ||
           (block[0] === oX+1 && block[1] === oY) ||
           (block[0] === oX && block[1] === oY+1) ||
           (block[0] === oX+1 && block[1] === oY+1)) {
-        Resources.placeable = false;
+        Resources.pad.blockedTower = true;
         Resources.ctx.top.fillStyle = 'rgba(255, 50, 42, 0.2)';
       }
     })
-
-
-    // console.log('Blocks', Resources.blocks);
-    // console.log('pos', [oX, oY]);
-    // console.log('huhu', Resources.blocks.indexOf([oX, oY]));
 
     Resources.ctx.top.fillRect(cornerX, cornerY, 39, 39)
   }
@@ -113,30 +114,42 @@ Handlers.drawPad = function(e) {
 }
 
 Handlers.creepBlock = function() {
+  if (Resources.pad.blockedTower || !Resources.pad.started) {
+    return;
+  }
+  // console.log(Resources.pad.blockedTower);
+  Resources.pad.blockedCreep = false;
+
   var oX = Resources.mousePos.x;
   var oY = Resources.mousePos.y;
-  var no = false;
-  console.log(Resources.placeable);
-  if (Resources.placeable) {
-    allCreeps.forEach(function (creep) {
-      if ((creep.node[0] === oX && creep.node[1] ===oY) ||
-          (creep.node[0] === oX+1 && creep.node[1] === oY) ||
-          (creep.node[0] === oX && creep.node[1] === oY+1) ||
-          (creep.node[0] === oX+1 && creep.node[1] === oY+1)) {
-        no = true;  
-      }
-    })
-  };
-    if (no) {
-      Handlers.erasePad();
-      Resources.placeable = false;
-      Resources.ctx.top.fillStyle = 'rgba(255, 50, 42, 0.2)';
-    } else {
-      Handlers.erasePad();
-      Resources.placeable = true;
-      Resources.ctx.top.fillStyle = 'rgba(42, 255, 50, 0.2)';
+  var creepThere = false;
+  // made an 'aura' around the block to detect incoming creeps
+  // REFACTOR
+  allCreeps.forEach(function (creep) {
+    if ((creep.node[0] === oX && creep.node[1] ===oY) ||
+        (creep.node[0] === oX+1 && creep.node[1] === oY) ||
+        (creep.node[0] === oX && creep.node[1] === oY+1) ||
+        (creep.node[0] === oX-1 && creep.node[1] === oY-1) ||
+        (creep.node[0] === oX+1 && creep.node[1] === oY-1) ||
+        (creep.node[0] === oX-1 && creep.node[1] === oY) ||
+        (creep.node[0] === oX && creep.node[1] === oY-1) ||
+        (creep.node[0] === oX && creep.node[1] === oY+1) ||
+        (creep.node[0] === oX+1 && creep.node[1] === oY+1)) {
+      creepThere = true;  
     }
-    Resources.ctx.top.fillRect(oX*20+1, oY*20+1, 39, 39)
+  })
+
+  if (creepThere) {
+    console.log(creepThere);
+    Handlers.erasePad();
+    Resources.pad.blockedCreep = true;
+    Resources.ctx.top.fillStyle = 'rgba(255, 50, 42, 0.2)';
+  } else {
+    Handlers.erasePad();
+    Resources.pad.blockedCreep = false;
+    Resources.ctx.top.fillStyle = 'rgba(42, 255, 50, 0.2)';
+  }
+  Resources.ctx.top.fillRect(oX*20+1, oY*20+1, 39, 39)
 }
 
 /**
@@ -145,10 +158,11 @@ Handlers.creepBlock = function() {
  * @param {object} event
  */
 Handlers.placeTower = function(event) {
-  if (!Resources.placeable) {
+    console.log(Resources.pad);
+  if (Resources.pad.blockedTower || Resources.pad.blockedCreep) {
     return;
   };
-  Resources.placeable = false;
+  Resources.pad.placeable = false;
   var startX = Handlers.getCorner(event.offsetX, 'x');
   var startY = Handlers.getCorner(event.offsetY, 'y');
 
@@ -166,18 +180,7 @@ Handlers.placeTower = function(event) {
     creep.setPath();
   })
  
-  // allCreeps.forEach(function (creep) {
-  //   if ((creep.node[0] === oX && creep.node[1] ===oY) ||
-  //       (creep.node[0] === oX+1 && creep.node[1] === oY) ||
-  //       (creep.node[0] === oX && creep.node[1] === oY+1) ||
-  //       (creep.node[0] === oX+1 && creep.node[1] === oY+1)) {
-  //     console.log('nope');
-  //     Resources.placeable = false;
-  //     Resources.ctx.top.fillStyle = 'rgba(255, 50, 42, 0.2)';
-
-  //   }
-  // })
-  Resources.ctx.main.fillStyle = '#DDD';
+  Resources.ctx.main.fillStyle = 'rgb(0,92,9)';
   Resources.ctx.main.fillRect(startX, startY, 39, 39);
   // once the 
   Handlers.erasePad();

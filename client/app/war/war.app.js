@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Creep constructor
  * @param {number} x, spawn x-axis position on matrix
@@ -11,22 +13,23 @@ var Creep = function(x, y, opt) {
   this.y = y * 20 + 9;
   this.node = [x, y];
   this.pathPos = 0;
-  this.path = Resources.finder.findPath(x, y, Resources.destination.x, Resources.destination.y, grid)
-}
+  this.path = Resources.finder.findPath(x, y, Resources.destination.x, Resources.destination.y, grid);
+};
 
 /**
  * Calculate creep path
  * @param {object} grid
  */
 Creep.prototype.setPath = function() {
+  var r = Resources;
   this.pathPos = 0;
-  var grid = new PF.Grid(Resources.x, Resources.y);
-  for(var i=0; i<=Resources.blocks.length-1; i++) {
-    grid.setWalkableAt(Resources.blocks[i][0], Resources.blocks[i][1], false)
+  var grid = new PF.Grid(r.x, r.y);
+  for(var i=0; i<=r.blocks.length-1; i++) {
+    grid.setWalkableAt(r.blocks[i][0], r.blocks[i][1], false);
   }
 
-  this.path = Resources.finder.findPath(this.node[0], this.node[1], Resources.destination.x, Resources.destination.y, grid)
-}
+  this.path = r.finder.findPath(this.node[0], this.node[1], r.destination.x, r.destination.y, grid);
+};
 
 /**
  * Update creep position
@@ -79,7 +82,7 @@ Creep.prototype.update = function(dt) {
       Handlers.creepBlock();
     }
   };
-}
+};
 
 Creep.prototype.render = function() {
   var ctx = Resources.ctx.anim;
@@ -92,7 +95,7 @@ Creep.prototype.render = function() {
   ctx.lineWidth = 1;
   ctx.strokeStyle = '#999';
   ctx.stroke();
-}
+};
 
 var allCreeps = [];
 var startingCreeps = [[2, 1, {name: 'bravo', color: '#F00'}],

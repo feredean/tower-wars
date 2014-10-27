@@ -8,7 +8,7 @@
   "newcap": true,
   "noarg": true,
   "regexp": true,
-  "undef": true,
+  "undef": false,
   "smarttabs": true,
   "asi": true,
   "debug": true
