@@ -6,25 +6,22 @@
  */
 
 var Resources = {
+  // Grid
+  ctx : {},
+
   y : 30,
   x : 17,
-  // speed is 1 or 2 atm
-  speed: 2,
-
+  
   width : function() {
     return this.x * 20 + 1;
   },
   height : function() {
     return this.y * 20 + 1;
   },
-
-  blocks : [],
-  pad : { 
-    started : false,
-    blockedTower :false, 
-    blockedCreep: false
-  },
-
+  
+  // Creep
+  // speed is 1 or 2 atm
+  speed: 2,
   finder : new PF.BestFirstFinder({allowDiagonal:true, dontCrossCorners: true}),
   destination : {
     x: 7,
@@ -38,5 +35,14 @@ var Resources = {
   
   path : [],
 
-  ctx : {}
+  // Towers
+  blocks : [],
+  pad : { 
+    started : false,
+    blockedTower :false, 
+    blockedCreep: false
+  },
+  range : 50
+
+
 }

@@ -51,11 +51,13 @@ var Engine = (function(global){
     lastTime = now;
     update(dt)
     renderCreeps();
+    renderTowers();
     win.requestAnimationFrame(animate);
     // setInterval(function() {
     //   update(dt);
+    // renderTowers();
     //   renderCreeps();
-    // }, 33)
+    // }, 333)
 
   }
 
@@ -66,6 +68,7 @@ var Engine = (function(global){
 
   function update(dt) {
     updateCreeps(dt);
+    updateTowers(dt);
   }
 
 
@@ -78,6 +81,10 @@ var Engine = (function(global){
     allCreeps.forEach(function(creep) {
       creep.update(dt);
     });
+  }
+
+  function updateTowers(dt) {
+
   }
 
 
@@ -114,6 +121,11 @@ var Engine = (function(global){
     });
   }
 
+  function renderTowers() {
+    allTowers.forEach(function(tower) {
+      tower.render();
+    })
+  }
 
   init();
 

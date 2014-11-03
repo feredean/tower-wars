@@ -25,7 +25,10 @@ Creep.prototype.setPath = function() {
   this.pathPos = 0;
   var grid = new PF.Grid(r.x, r.y);
   for(var i=0; i<=r.blocks.length-1; i++) {
-    grid.setWalkableAt(r.blocks[i][0], r.blocks[i][1], false);
+    if (typeof r.blocks[i][0] !== 'undefined' && 
+        typeof r.blocks[i][1] !== 'undefined') {
+      grid.setWalkableAt(r.blocks[i][0], r.blocks[i][1], false);
+    }
   }
 
   this.path = r.finder.findPath(this.node[0], this.node[1], r.destination.x, r.destination.y, grid);
@@ -110,4 +113,40 @@ for (var i=0; i<=startingCreeps.length-1; ++i){
   var creep = startingCreeps[i];
   allCreeps.push(new Creep(creep[0], creep[1], creep[2])); //... no
 }
+
+var Tower = function(blocks, x, y, range) {
+  this.nodes = blocks;
+  this.x = x+20;
+  this.y = y+20;
+  this.range = range;
+  this.startAngle = 1.3 * Math.PI;
+  this.endAngle = 1.7 * Math.PI;
+  this.startAngle = Math.atan2(1230,200) * Math.PI;
+  this.endAngle = 1 * Math.PI;
+  this.range = range;
+}
+
+Tower.prototype.render = function() {
+  var c = {
+    x : allCreeps[allCreeps.length-1].x,
+    y : allCreeps[allCreeps.length-1].y
+  }
+  var angle =  Math.atan2(c.y - this.y, c.x - this.x);
+  var ctx = Resources.ctx.anim;
+
+  ctx.beginPath();
+  ctx.fillStyle = '#FFF';
+  ctx.fillRect(this.x-20, this.y-20, 39, 39);
+  ctx.arc(this.x, this.y, 15, angle , angle - 0.15, true);
+  ctx.fill();
+  ctx.lineWidth = 10;
+  ctx.strokeStyle = '#333';
+  ctx.stroke();
+}
+
+
+var allTowers = [];
+
+
+
 

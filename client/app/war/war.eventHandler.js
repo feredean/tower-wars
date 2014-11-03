@@ -124,23 +124,18 @@ Handlers.creepBlock = function() {
   var oY = Resources.mousePos.y;
   var creepThere = false;
   // made an 'aura' around the block to detect incoming creeps
-  // REFACTOR
   allCreeps.forEach(function (creep) {
-    if ((creep.node[0] === oX && creep.node[1] ===oY) ||
-        (creep.node[0] === oX+1 && creep.node[1] === oY) ||
-        (creep.node[0] === oX && creep.node[1] === oY+1) ||
-        (creep.node[0] === oX-1 && creep.node[1] === oY-1) ||
-        (creep.node[0] === oX+1 && creep.node[1] === oY-1) ||
-        (creep.node[0] === oX-1 && creep.node[1] === oY) ||
-        (creep.node[0] === oX && creep.node[1] === oY-1) ||
-        (creep.node[0] === oX && creep.node[1] === oY+1) ||
-        (creep.node[0] === oX+1 && creep.node[1] === oY+1)) {
-      creepThere = true;  
+    for (var i = 0; i<=3; ++i) {
+      for (var j = 0; j<=3; ++j) {
+        // optimisation - and creep.path goes through center 4 blocks
+        if (creep.node[0] === oX + i -1 && creep.node[1] === oY + j - 2) {
+          creepThere = true;
+        }
+      }
     }
   })
 
   if (creepThere) {
-    console.log(creepThere);
     Handlers.erasePad();
     Resources.pad.blockedCreep = true;
     Resources.ctx.top.fillStyle = 'rgba(255, 50, 42, 0.2)';
@@ -158,30 +153,33 @@ Handlers.creepBlock = function() {
  * @param {object} event
  */
 Handlers.placeTower = function(event) {
-    console.log(Resources.pad);
   if (Resources.pad.blockedTower || Resources.pad.blockedCreep) {
     return;
   };
   Resources.pad.placeable = false;
   var startX = Handlers.getCorner(event.offsetX, 'x');
   var startY = Handlers.getCorner(event.offsetY, 'y');
-
   var oX = (startX-1)/20;
   var oY = (startY-1)/20;
-  // console.log([oX, oY], [oX+1, oY], [oX, oY+1], [oX+1, oY+1]);
+  var padBlocks = [[oX, oY], [oX+1, oY], [oX, oY+1], [oX+1, oY+1]]
 
+  // padBlocks.forEach(function(block) {
+  //   Resources.blocks.push(block);
+  // });
   Resources.blocks.push([oX, oY])
   Resources.blocks.push([oX+1, oY])
   Resources.blocks.push([oX, oY+1])
   Resources.blocks.push([oX+1, oY+1])
+  allTowers.push(new Tower(padBlocks, startX, startY, 10));
+
 
   allCreeps.push(new Creep(0, 0, {name: 'jhondoe', color:'#00F'}));
   allCreeps.forEach(function(creep) {
     creep.setPath();
   })
  
-  Resources.ctx.main.fillStyle = 'rgb(0,92,9)';
-  Resources.ctx.main.fillRect(startX, startY, 39, 39);
+  // Resources.ctx.main.fillStyle = 'rgb(0,92,9)';
+  // Resources.ctx.main.fillRect(startX, startY, 39, 39);
   // once the 
   Handlers.erasePad();
   Resources.ctx.top.fillStyle = 'rgba(255, 0, 0, 0.2)';
