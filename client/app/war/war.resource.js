@@ -23,8 +23,35 @@ var Resources = {
   // speed is 1 or 2 atm
   speed: 2,
   finder : new PF.BestFirstFinder({allowDiagonal:true, dontCrossCorners: true}),
+  
+  spawnZone : function() {
+    return {
+      start: {
+        x: 0,
+        y: 0
+      },
+      end: {
+        x: this.x,
+        y: 3
+      }
+    };
+  },
+
+  arriveZone : function() {
+    return {
+      start: {
+        x: Math.floor(this.x/2) - 1,
+        y: this.y - 3
+      },
+      end: {
+        x: Math.floor(this.x/2) + 1,
+        y: this.y - 1
+      }
+    }
+  },
+
   destination : {
-    x: 7,
+    x: 8,
     y: 29
   },
 
@@ -42,7 +69,7 @@ var Resources = {
     blockedTower :false, 
     blockedCreep: false
   },
-  range : 50
+  range : 140
 
 
 }

@@ -76,6 +76,9 @@ Handlers.getCorner = function(point, axis) {
  */  
 Handlers.drawPad = function(e) {
   Resources.pad.started = true;
+  var spawnEnd = Resources.spawnZone().end;
+  var arriveStart = Resources.arriveZone().start;
+  var arriveEnd = Resources.arriveZone().end;
 
   var x = e.offsetX;
   var y = e.offsetY;
@@ -86,9 +89,17 @@ Handlers.drawPad = function(e) {
   var block;
   Resources.mousePos.x = oX;
   Resources.mousePos.y = oY;
-
+  // If we are on the same pad don't change anything 
   if (Handlers.currentX === oX && Handlers.currentY === oY) {
     return;
+  } else if ( oY < spawnEnd.y ||
+             (oX > arriveStart.x - 2 && 
+              oX <= arriveEnd.x &&
+              oY >= arriveStart.y - 1) ) {
+    Resources.pad.blockedTower = true;
+    Handlers.erasePad();
+    Resources.ctx.top.fillStyle = 'rgba(255, 50, 42, 0.2)';
+    Resources.ctx.top.fillRect(cornerX, cornerY, 39, 39)
   } else {
     Resources.pad.blockedTower = false;
     Handlers.erasePad();
@@ -153,7 +164,9 @@ Handlers.creepBlock = function() {
  * @param {object} event
  */
 Handlers.placeTower = function(event) {
-  if (Resources.pad.blockedTower || Resources.pad.blockedCreep) {
+
+  if (Resources.pad.blockedTower || 
+      Resources.pad.blockedCreep) {
     return;
   };
   Resources.pad.placeable = false;
@@ -161,19 +174,14 @@ Handlers.placeTower = function(event) {
   var startY = Handlers.getCorner(event.offsetY, 'y');
   var oX = (startX-1)/20;
   var oY = (startY-1)/20;
-  var padBlocks = [[oX, oY], [oX+1, oY], [oX, oY+1], [oX+1, oY+1]]
 
-  // padBlocks.forEach(function(block) {
-  //   Resources.blocks.push(block);
-  // });
+  var padBlocks = [[oX, oY], [oX+1, oY], [oX, oY+1], [oX+1, oY+1]]
   Resources.blocks.push([oX, oY])
   Resources.blocks.push([oX+1, oY])
   Resources.blocks.push([oX, oY+1])
   Resources.blocks.push([oX+1, oY+1])
-  allTowers.push(new Tower(padBlocks, startX, startY, 10));
+  allTowers.push(new Tower(padBlocks, startX, startY, Resources.range));
 
-
-  allCreeps.push(new Creep(0, 0, {name: 'jhondoe', color:'#00F'}));
   allCreeps.forEach(function(creep) {
     creep.setPath();
   })

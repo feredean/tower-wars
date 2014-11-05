@@ -19,6 +19,20 @@ body {
     padding: 0.2em 0;
 }
 
+#add-creep {
+	position: absolute;
+	z-index: 1000;
+	user-select: none;
+	cursor: pointer;
+	top: 100px;
+	right: 20px;
+	padding: 25px;
+	border: 1px	solid #DDD;
+}
+
+
+
+
 // Component styles are injected through grunt
 // injector
 @import 'war/war.scss';

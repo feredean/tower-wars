@@ -78,9 +78,13 @@ var Engine = (function(global){
    */  
   function updateCreeps(dt) {
     animCtx.clearRect(0, 0, Resources.width(), Resources.height())
-    allCreeps.forEach(function(creep) {
-      creep.update(dt);
-    });
+    for (var i=0; i<=allCreeps.length-1; ++i) {
+      if (allCreeps[i].alive) {
+        allCreeps[i].update();
+      } else {
+        allCreeps.splice(i,1);
+      }
+    }
   }
 
   function updateTowers(dt) {
@@ -112,6 +116,11 @@ var Engine = (function(global){
       mainCtx.lineTo( col*20 + 0.5, 600 + 0.5);
       mainCtx.stroke(); 
     }
+
+    mainCtx.fillStyle = '#FFF';
+    mainCtx.fillRect(1,1,Resources.x*20-1, 3*20-1)
+    mainCtx.fillRect(Resources.arriveZone().start.x * 20 + 1, 
+                     Resources.arriveZone().start.y * 20 + 1, 59,59)
 
   }
 

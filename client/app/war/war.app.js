@@ -14,6 +14,8 @@ var Creep = function(x, y, opt) {
   this.node = [x, y];
   this.pathPos = 0;
   this.path = Resources.finder.findPath(x, y, Resources.destination.x, Resources.destination.y, grid);
+  this.setPath();
+  this.alive = true;
 };
 
 /**
@@ -46,6 +48,7 @@ Creep.prototype.setPath = function() {
 Creep.prototype.update = function(dt) {
   // We reached the end of the path, here we stop
   if (this.path.length-1 === this.pathPos) {
+    this.alive = false;
     return;
   };
   // Get next node where we need to go
@@ -114,33 +117,48 @@ for (var i=0; i<=startingCreeps.length-1; ++i){
   allCreeps.push(new Creep(creep[0], creep[1], creep[2])); //... no
 }
 
+/**
+ * Tower constructor
+ * @param {array} blocks
+ * @param {number} x, cornerX for tower block
+ * @param {number} y, cornerY for tower block
+ * @param {number} range, tower range
+ */
 var Tower = function(blocks, x, y, range) {
   this.nodes = blocks;
   this.x = x+20;
   this.y = y+20;
   this.range = range;
-  this.startAngle = 1.3 * Math.PI;
-  this.endAngle = 1.7 * Math.PI;
-  this.startAngle = Math.atan2(1230,200) * Math.PI;
-  this.endAngle = 1 * Math.PI;
-  this.range = range;
+
 }
 
 Tower.prototype.render = function() {
-  var c = {
-    x : allCreeps[allCreeps.length-1].x,
-    y : allCreeps[allCreeps.length-1].y
+  var c = {};
+  var angle;
+  for(var i = 0; i <= allCreeps.length-1; ++i) {
+    c.x = allCreeps[i].x;
+    c.y = allCreeps[i].y;
+    if (Math.pow(c.x - this.x, 2) + Math.pow(c.y - this.y, 2) <= Math.pow(this.range, 2)){
+      angle =  Math.atan2(c.y - this.y, c.x - this.x);
+      break;
+    }
   }
-  var angle =  Math.atan2(c.y - this.y, c.x - this.x);
+
   var ctx = Resources.ctx.anim;
 
   ctx.beginPath();
   ctx.fillStyle = '#FFF';
   ctx.fillRect(this.x-20, this.y-20, 39, 39);
+  ctx.lineWidth = 9;
   ctx.arc(this.x, this.y, 15, angle , angle - 0.15, true);
   ctx.fill();
-  ctx.lineWidth = 10;
   ctx.strokeStyle = '#333';
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.strokeStyle = '#333';
+  ctx.arc(this.x, this.y, 11, 0* Math.PI, 2* Math.PI, false);
+  ctx.lineWidth = 1;
   ctx.stroke();
 }
 
