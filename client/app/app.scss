@@ -8,8 +8,10 @@ $fa-font-path: "/bower_components/font-awesome/fonts";
  * App-wide Styles
  */
 
-body {
+.player {
+    float: left;
     text-align: center;
+    width: 300px;
 }
 
 .browsehappy {
@@ -27,6 +29,17 @@ body {
 	top: 100px;
 	right: 20px;
 	padding: 25px;
+	border: 1px	solid #DDD;
+}
+
+#clear-towers {
+	position: absolute;
+	z-index: 1000;
+	user-select: none;
+	cursor: pointer;
+	top: 200px;
+	right: 20px;
+	padding: 16px;
 	border: 1px	solid #DDD;
 }
 

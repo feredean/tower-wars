@@ -4,18 +4,31 @@
  * Creep constructor
  * @param {number} x, spawn x-axis position on matrix
  * @param {number} y, spawn y-axis position on matrix
+ * @param {object} opt, Creep options
+ * - name (debug info)
+ * - color
+ * - board - on which it will be spawned
  */
 var Creep = function(x, y, opt) { 
   var grid = new PF.Grid(Resources.x, Resources.y);
   this.name = opt.name;
   this.color = opt.color;
+  this.board = opt.board;
   this.x = x * 20 + 9;
   this.y = y * 20 + 9;
   this.node = [x, y];
   this.pathPos = 0;
   this.path = Resources.finder.findPath(x, y, Resources.destination.x, Resources.destination.y, grid);
   this.setPath();
+  this.health = 30;
   this.alive = true;
+
+  if (allCreeps.length === 0 && enemyCreeps === 0) {
+    this.id = 0;
+  } else {
+    // not sure if this works
+    this.id = allCreeps.length + enemyCreeps.length + 1;
+  }
 };
 
 /**
@@ -23,13 +36,20 @@ var Creep = function(x, y, opt) {
  * @param {object} grid
  */
 Creep.prototype.setPath = function() {
+  var blocks;
   var r = Resources;
+  if (this.board === 'player') {
+    blocks = r.blocks;
+  } else {
+    blocks = r.enemyBlocks;
+  }
+
   this.pathPos = 0;
   var grid = new PF.Grid(r.x, r.y);
-  for(var i=0; i<=r.blocks.length-1; i++) {
-    if (typeof r.blocks[i][0] !== 'undefined' && 
-        typeof r.blocks[i][1] !== 'undefined') {
-      grid.setWalkableAt(r.blocks[i][0], r.blocks[i][1], false);
+  for(var i=0; i<=blocks.length-1; i++) {
+    if (typeof blocks[i][0] !== 'undefined' && 
+        typeof blocks[i][1] !== 'undefined') {
+      grid.setWalkableAt(blocks[i][0], blocks[i][1], false);
     }
   }
 
@@ -44,6 +64,8 @@ Creep.prototype.setPath = function() {
  * so in order to update it we need to know how much
  * time passed from putting it on hold to resuming it.
  * TODO update animation if dt > 2*last_dt? 
+ * also important when cpu is at max, now the animation 
+ * slows down.
  */
 Creep.prototype.update = function(dt) {
   // We reached the end of the path, here we stop
@@ -91,31 +113,49 @@ Creep.prototype.update = function(dt) {
 };
 
 Creep.prototype.render = function() {
-  var ctx = Resources.ctx.anim;
-  
+  var ctx;
+  var start;
+  var end;
+
+  if (this.board === 'player') {
+    ctx = Resources.ctx.anim;
+  } else {
+    ctx = Resources.ctx.enemyAnim;
+  } 
+
   ctx.beginPath();
-  ctx.fillStyle =this.color;
-  ctx.arc(this.x, this.y, 5, 0, 2 * Math.PI, false);
-  ctx.fill();
-  // ctx.fillText(this.node, this.x+10, this.y);
+  ctx.arc(this.x, this.y, 6, 0, 2 * Math.PI, false);
+  ctx.fillStyle = '#333';
+  // ctx.fillText(this.health, this.x+10, this.y);
   ctx.lineWidth = 1;
-  ctx.strokeStyle = '#999';
   ctx.stroke();
+
+  ctx.beginPath();
+  // i'm too tired to know what i'm doing but this should 
+  // a clue as to how much hp the creep has
+  // ctx.arc(this.x, this.y, 6, 1 * Math.PI, 0.9 * Math.PI)
+  start = 0 + (Math.ceil(this.health/3-1)/10) + 0.5;
+  end = 2 - (Math.ceil(this.health/3-1)/10) + 0.5;
+
+  if (start === 0.4 && end === 2.6) {
+    start = 0.5;
+    end = 2.5;
+  }
+  ctx.arc(this.x, this.y, 6, start * Math.PI, end * Math.PI, true)
+  ctx.fillStyle = this.color;
+  ctx.fill();
+};
+
+Creep.prototype.takeDamage = function(damage) {
+  this.health -= damage;
+  if (this.health === 0) {
+    this.alive = false;
+  }
 };
 
 var allCreeps = [];
-var startingCreeps = [[2, 1, {name: 'bravo', color: '#F00'}],
-                      // [15,2, 'alpha'], 
-                      [6, 3, {name: 'charlie', color: '#0F0'}], ];
-                      // [0,0], 
-                      // [11,5], 
-                      // [10,2], 
-                      // [9,1]];
+var enemyCreeps = [];
 
-for (var i=0; i<=startingCreeps.length-1; ++i){
-  var creep = startingCreeps[i];
-  allCreeps.push(new Creep(creep[0], creep[1], creep[2])); //... no
-}
 
 /**
  * Tower constructor
@@ -124,47 +164,131 @@ for (var i=0; i<=startingCreeps.length-1; ++i){
  * @param {number} y, cornerY for tower block
  * @param {number} range, tower range
  */
-var Tower = function(blocks, x, y, range) {
-  this.nodes = blocks;
+var Tower = function(x, y, opt) {
+  this.nodes = opt.blocks;
+  this.board = opt.board;
   this.x = x+20;
   this.y = y+20;
-  this.range = range;
-
+  this.range = opt.range;
+  this.speed = 100;
+  this.reload = undefined;
 }
 
 Tower.prototype.render = function() {
+  var self = this;
   var c = {};
   var angle;
-  for(var i = 0; i <= allCreeps.length-1; ++i) {
-    c.x = allCreeps[i].x;
-    c.y = allCreeps[i].y;
-    if (Math.pow(c.x - this.x, 2) + Math.pow(c.y - this.y, 2) <= Math.pow(this.range, 2)){
+  var ctx;
+  var creeps;
+
+  if (this.board === 'player') {
+    ctx = Resources.ctx.anim;
+    creeps = allCreeps;
+  } else {
+    ctx = Resources.ctx.enemyAnim;
+    creeps = enemyCreeps;
+  } 
+
+  for(var i = 0; i <= creeps.length-1; ++i) {
+    c.x = creeps[i].x;
+    c.y = creeps[i].y;
+    var road = Math.sqrt(Math.pow(c.x - this.x,2) + Math.pow(c.y - this.y,2));
+    // aim for the first creep
+    // here there's a problem with the first creep not being the physically first due to 
+    // randomization of spawn areas.
+    if (Math.pow(c.x - this.x, 2) + Math.pow(c.y - this.y, 2) <= Math.pow(this.range, 2)) {
       angle =  Math.atan2(c.y - this.y, c.x - this.x);
+      if (!this.reload) {
+        // allProjectiles.push(new Projectile(self.x, self.y, creeps[i].id))
+        var board = this.board === 'player' ? 'player' : 'enemy';
+        allProjectiles.push(new Projectile(self.x + 20*(c.x - self.x)/road, self.y + 20*(c.y - self.y)/road, creeps[i].id, board))
+        self.reload = setTimeout(function() {
+          self.reload = undefined;
+        }, self.speed);
+      }
       break;
     }
   }
-
-  var ctx = Resources.ctx.anim;
 
   ctx.beginPath();
   ctx.fillStyle = '#FFF';
   ctx.fillRect(this.x-20, this.y-20, 39, 39);
   ctx.lineWidth = 9;
-  ctx.arc(this.x, this.y, 15, angle , angle - 0.15, true);
+  // centering the canon with a radian of 0.15
+  ctx.arc(this.x, this.y, 15, angle + 0.075, angle - 0.075, true);
   ctx.fill();
   ctx.strokeStyle = '#333';
   ctx.stroke();
 
-  ctx.beginPath();
+  ctx.beginPath();6
   ctx.strokeStyle = '#333';
   ctx.arc(this.x, this.y, 11, 0* Math.PI, 2* Math.PI, false);
+  ctx.fill();
   ctx.lineWidth = 1;
   ctx.stroke();
 }
 
 
 var allTowers = [];
+var enemyTowers = [];
 
+/**
+ * Projectile constructor
+ * @param {number} x, projectile start x
+ * @param {number} y, projectile start y
+ * @param {number} creepId 
+ */
+var Projectile = function(x, y, creepId, board) {
+  this.x = x;
+  this.y = y;
+  this.board = board;
+  this.speed = 4;
+  this.damage = 1;
+  this.size = 2;
+  this.creepId = creepId;
+  this.alive = true;
+}
+
+Projectile.prototype.render = function() {
+  var ctx = this.board === 'player' ? Resources.ctx.anim : Resources.ctx.enemyAnim;
+
+  ctx.beginPath();
+  ctx.fillStyle = '#333';
+  ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI, false);
+  ctx.fill();
+}
+
+Projectile.prototype.update = function() {
+  var creeps = this.board === 'player' ? allCreeps : enemyCreeps;
+  var c = {};
+  // if tower is focusing on this creep
+  for(var i = 0; i <= creeps.length-1; ++i) {
+    if(creeps[i].id === this.creepId){
+      c = creeps[i];
+      break;  
+    }
+  }
+  // check if creep is dead, destroy projectile
+  if (!c.alive) {
+    this.alive = false;
+    return;
+  }
+  var road = Math.sqrt(Math.pow(c.x - this.x,2) + Math.pow(c.y - this.y,2));
+
+  // go kill it
+  this.x += this.speed*(c.x - this.x)/road;
+  this.y += this.speed*(c.y - this.y)/road;
+  if (this.y > c.y-5 && this.y < c.y+5 && 
+      this.x > c.x-5 && this.x < c.x+5) {
+    this.alive = false;
+    c.takeDamage(this.damage);
+  }
+
+
+}
+
+var allProjectiles = [];
+var enemyProjectiles = [];
 
 
 

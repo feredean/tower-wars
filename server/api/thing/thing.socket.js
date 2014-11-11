@@ -3,7 +3,6 @@
  */
 
 'use strict';
-
 var thing = require('./thing.model');
 
 exports.register = function(socket) {

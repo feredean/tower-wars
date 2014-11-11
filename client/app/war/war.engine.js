@@ -9,49 +9,86 @@ var Engine = (function(global){
   * - render grid
   * - place blocks
   * - calculate path
+  * 
+  * My solution got ugly fast, need to refactor it
+  * Maybe move it into resource?
   */
+
+  // Player
   var canvasBackground = doc.createElement('canvas');
   var mainCtx = canvasBackground.getContext('2d');
   canvasBackground.width = Resources.width();
   canvasBackground.height = Resources.height();
   doc.getElementById('canvas-main').appendChild(canvasBackground);
+
+  // Enemy 
+  var enemyBackground = doc.createElement('canvas');
+  var enemyMain = enemyBackground.getContext('2d');
+  enemyBackground.width = Resources.width();
+  enemyBackground.height = Resources.height();
+  doc.getElementById('enemy-main').appendChild(enemyBackground);
+
   /**
    * Top Canvas
    * - buildings placement engine
    */
+
+  // Player
   var canvasTop = doc.createElement('canvas');
   var topCtx = canvasTop.getContext('2d');
   canvasTop.width = Resources.width();
   canvasTop.height = Resources.height();
   doc.getElementById('canvas-top').appendChild(canvasTop);
 
+  // Enemy
+  // var canvasTop = doc.createElement('canvas');
+  // var topCtx = canvasTop.getContext('2d');
+  // canvasTop.width = Resources.width();
+  // canvasTop.height = Resources.height();
+  // doc.getElementById('enemy-canvas-top').appendChild(canvasTop);
+
   /**
    * Animation Canvas
    * - enemy animation
    * - tower animations
+   * - projectile animations
    */
+
+  // Player
   var canvasAnim = doc.createElement('canvas');
   var animCtx = canvasAnim.getContext('2d');
   canvasAnim.width = Resources.width();
   canvasAnim.height = Resources.height();
   doc.getElementById('canvas-anim').appendChild(canvasAnim);
 
+  // Enemy
+  var enemyAnim = doc.createElement('canvas');
+  var enemyAnimCtx = enemyAnim.getContext('2d');
+  enemyAnim.width = Resources.width();
+  enemyAnim.height = Resources.height();
+  doc.getElementById('enemy-anim').appendChild(enemyAnim);
+
   Resources.ctx.main = mainCtx;
+  Resources.ctx.enemyMain = enemyMain;
   Resources.ctx.top = topCtx;
   Resources.ctx.anim = animCtx;
+  Resources.ctx.enemyAnim = enemyAnimCtx;
 
   function main() {
-    renderGrid();
+    renderGrid(Resources.ctx.main);
+    renderGrid(Resources.ctx.enemyMain);
     animate();
   }
 
   function animate() {
     var now = Date.now();
+    // dt is not implemented
     var dt = (now - lastTime) / 1000.0;
     lastTime = now;
     update(dt)
     renderCreeps();
     renderTowers();
+    renderProjectiles() 
     win.requestAnimationFrame(animate);
     // setInterval(function() {
     //   update(dt);
@@ -67,8 +104,11 @@ var Engine = (function(global){
   }
 
   function update(dt) {
-    updateCreeps(dt);
-    updateTowers(dt);
+    animCtx.clearRect(0, 0, Resources.width(), Resources.height())
+    enemyAnimCtx.clearRect(0, 0, Resources.width(), Resources.height())
+    updateCreeps(allCreeps);
+    updateCreeps(enemyCreeps);
+    updateProjectiles();
   }
 
 
@@ -76,51 +116,60 @@ var Engine = (function(global){
    * Draws and updates the position of the creeps on the 
    * Animation Canvas 
    */  
-  function updateCreeps(dt) {
-    animCtx.clearRect(0, 0, Resources.width(), Resources.height())
-    for (var i=0; i<=allCreeps.length-1; ++i) {
-      if (allCreeps[i].alive) {
-        allCreeps[i].update();
+  function updateCreeps(creeps) {
+    for (var i=0; i<=creeps.length-1; ++i) {
+      if (creeps[i].alive) {
+        creeps[i].update();
       } else {
-        allCreeps.splice(i,1);
+        creeps.splice(i,1);
       }
     }
   }
 
-  function updateTowers(dt) {
 
+  /**
+   * Draws and updates the position of the projectiles on the 
+   * Animation Canvas 
+   */  
+  function updateProjectiles(dt) {
+    for (var i=0; i<=allProjectiles.length-1; ++i) {
+      if (allProjectiles[i].alive) {
+        allProjectiles[i].update();
+      } else {
+        allProjectiles.splice(i,1);
+      }
+    }
   }
 
 
   /**
    * Creates a grid
    */
-  function renderGrid() {
+  function renderGrid(ctx) {
     var row;
     var col;
-
-    mainCtx.strokeStyle = '#DDD';
-    mainCtx.lineWidth = 1;
+    ctx.strokeStyle = '#CCC';
+    ctx.lineWidth = 1;
 
     for (row = 0; row <= Resources.y; ++row) {
-      mainCtx.beginPath();
-      // mainCtx.fillText(row, 0 + 0.5, row*20 - 6 + 0.5);
-      mainCtx.moveTo( 0 + 0.5, row*20 + 0.5);
-      mainCtx.lineTo( 600 + 0.5, row*20 + 0.5);
-      mainCtx.stroke();
+      ctx.beginPath();
+      // ctx.fillText(row, 0 + 0.5, row*20 - 6 + 0.5);
+      ctx.moveTo( 0 + 0.5, row*20 + 0.5);
+      ctx.lineTo( 600 + 0.5, row*20 + 0.5);
+      ctx.stroke();
     }
 
     for (col = 0; col <= Resources.x; ++col) {
-      mainCtx.beginPath();
-      mainCtx.moveTo( col*20 + 0.5, 0 + 0.5);
-      mainCtx.lineTo( col*20 + 0.5, 600 + 0.5);
-      mainCtx.stroke(); 
+      ctx.beginPath();
+      ctx.moveTo( col*20 + 0.5, 0 + 0.5);
+      ctx.lineTo( col*20 + 0.5, 600 + 0.5);
+      ctx.stroke(); 
     }
 
-    mainCtx.fillStyle = '#FFF';
-    mainCtx.fillRect(1,1,Resources.x*20-1, 3*20-1)
-    mainCtx.fillRect(Resources.arriveZone().start.x * 20 + 1, 
-                     Resources.arriveZone().start.y * 20 + 1, 59,59)
+    ctx.fillStyle = '#FFF';
+    ctx.fillRect(1,1,Resources.x*20-1, 3*20-1)
+    ctx.fillRect(Resources.arriveZone().start.x * 20 + 1, 
+                Resources.arriveZone().start.y * 20 + 1, 59,59)
 
   }
 
@@ -128,11 +177,27 @@ var Engine = (function(global){
     allCreeps.forEach(function(creep) {
       creep.render();
     });
+    enemyCreeps.forEach(function(creep) {
+      creep.render()
+    })
+
   }
 
   function renderTowers() {
     allTowers.forEach(function(tower) {
       tower.render();
+    })
+    enemyTowers.forEach(function(tower) {
+      tower.render();
+    })
+  }
+
+  function renderProjectiles() {
+    allProjectiles.forEach(function(projectile) {
+      projectile.render();
+    })
+    enemyProjectiles.forEach(function(projectile) {
+      projectile.render();
     })
   }
 

@@ -27,11 +27,20 @@
     <![endif]-->
 
     <div id="add-creep">+1</div>
-    <div id="canvas-main">
+    <div id="clear-towers">Clear</div>
+    <div class="players">
+      <div id="canvas-main">
+      </div>
+      <div id="canvas-top">
+      </div>
+      <div id="canvas-anim">
+      </div>
     </div>
-    <div id="canvas-top">
-    </div>
-    <div id="canvas-anim">
+    <div class="players">
+      <div id="enemy-main">
+      </div>
+      <div id="enemy-anim">
+      </div>
     </div>
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
@@ -44,18 +53,19 @@
       ga('create', 'UA-XXXXX-X');
       ga('send', 'pageview');
     </script>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 
     <!--[if lt IE 9]>
     <script src="bower_components/es5-shim/es5-shim.js"></script>
     <script src="bower_components/json3/lib/json3.min.js"></script>
     <![endif]-->
         <!-- build:js({client,node_modules}) app/vendor.js -->
-      <script src="socket.io-client/socket.io.js"></script>
       <script src="app/war/pathfinding-browser.js"></script>
       <script src="app/war/war.resource.js"></script>
       <script src="app/war/war.eventHandler.js"></script>
       <script src="app/war/war.app.js"></script>
       <script src="app/war/war.engine.js"></script>
+      <script src="app/war/war.socket.js"></script>
       <script src="app/war/ui.js"></script>
     <!-- endbuild -->
 </body>

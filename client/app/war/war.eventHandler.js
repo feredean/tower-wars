@@ -75,10 +75,6 @@ Handlers.getCorner = function(point, axis) {
  * @param {object} event
  */  
 Handlers.drawPad = function(e) {
-  Resources.pad.started = true;
-  var spawnEnd = Resources.spawnZone().end;
-  var arriveStart = Resources.arriveZone().start;
-  var arriveEnd = Resources.arriveZone().end;
 
   var x = e.offsetX;
   var y = e.offsetY;
@@ -87,52 +83,63 @@ Handlers.drawPad = function(e) {
   var oX = (cornerX-1)/20;
   var oY = (cornerY-1)/20;
   var block;
-  Resources.mousePos.x = oX;
-  Resources.mousePos.y = oY;
+  var r = Resources;
+
+  var spawnEnd = r.spawnZone().end;
+  var arriveStart = r.arriveZone().start;
+  var arriveEnd = r.arriveZone().end;
+  r.pad.started = true;
+  r.mousePos.x = oX;
+  r.mousePos.y = oY;
   // If we are on the same pad don't change anything 
   if (Handlers.currentX === oX && Handlers.currentY === oY) {
     return;
+  // check if pad is in starter/arrival zone
   } else if ( oY < spawnEnd.y ||
              (oX > arriveStart.x - 2 && 
               oX <= arriveEnd.x &&
               oY >= arriveStart.y - 1) ) {
-    Resources.pad.blockedTower = true;
+    r.pad.blockedTower = true;
     Handlers.erasePad();
-    Resources.ctx.top.fillStyle = 'rgba(255, 50, 42, 0.2)';
-    Resources.ctx.top.fillRect(cornerX, cornerY, 39, 39)
+    r.ctx.top.fillStyle = 'rgba(255, 50, 42, 0.2)';
+    r.ctx.top.fillRect(cornerX, cornerY, 39, 39)
+
   } else {
-    Resources.pad.blockedTower = false;
+    r.pad.blockedTower = false;
     Handlers.erasePad();
-    if (Resources.pad.blockedTower) {
-      Resources.ctx.top.fillStyle = 'rgba(255, 50, 42, 0.2)';
+    if (r.pad.blockedTower) {
+      r.ctx.top.fillStyle = 'rgba(255, 50, 42, 0.2)';
     } else {
-      Resources.ctx.top.fillStyle = 'rgba(42, 255, 50, 0.2)';
+      r.ctx.top.fillStyle = 'rgba(42, 255, 50, 0.2)';
     }
-    Resources.blocks.forEach(function(block) {
+
+    // if tower pad overlaps another tower, deny placement
+    r.blocks.forEach(function(block) {
       if ((block[0] === oX && block[1] ===oY) ||
           (block[0] === oX+1 && block[1] === oY) ||
           (block[0] === oX && block[1] === oY+1) ||
           (block[0] === oX+1 && block[1] === oY+1)) {
-        Resources.pad.blockedTower = true;
-        Resources.ctx.top.fillStyle = 'rgba(255, 50, 42, 0.2)';
+        r.pad.blockedTower = true;
+        r.ctx.top.fillStyle = 'rgba(255, 50, 42, 0.2)';
       }
     })
 
-    Resources.ctx.top.fillRect(cornerX, cornerY, 39, 39)
+    r.ctx.top.fillRect(cornerX, cornerY, 39, 39)
   }
   Handlers.currentX = oX;
   Handlers.currentY = oY;
 }
 
 Handlers.creepBlock = function() {
-  if (Resources.pad.blockedTower || !Resources.pad.started) {
+  var r = Resources;
+  if (r.pad.blockedTower || !r.pad.started) {
     return;
   }
   // console.log(Resources.pad.blockedTower);
-  Resources.pad.blockedCreep = false;
+  r.pad.blockedCreep = false;
 
-  var oX = Resources.mousePos.x;
-  var oY = Resources.mousePos.y;
+  var oX = r.mousePos.x;
+  var oY = r.mousePos.y;
   var creepThere = false;
   // made an 'aura' around the block to detect incoming creeps
   allCreeps.forEach(function (creep) {
@@ -148,14 +155,14 @@ Handlers.creepBlock = function() {
 
   if (creepThere) {
     Handlers.erasePad();
-    Resources.pad.blockedCreep = true;
-    Resources.ctx.top.fillStyle = 'rgba(255, 50, 42, 0.2)';
+    r.pad.blockedCreep = true;
+    r.ctx.top.fillStyle = 'rgba(255, 50, 42, 0.2)';
   } else {
     Handlers.erasePad();
-    Resources.pad.blockedCreep = false;
-    Resources.ctx.top.fillStyle = 'rgba(42, 255, 50, 0.2)';
+    r.pad.blockedCreep = false;
+    r.ctx.top.fillStyle = 'rgba(42, 255, 50, 0.2)';
   }
-  Resources.ctx.top.fillRect(oX*20+1, oY*20+1, 39, 39)
+  r.ctx.top.fillRect(oX*20+1, oY*20+1, 39, 39)
 }
 
 /**
@@ -164,24 +171,55 @@ Handlers.creepBlock = function() {
  * @param {object} event
  */
 Handlers.placeTower = function(event) {
-
-  if (Resources.pad.blockedTower || 
-      Resources.pad.blockedCreep) {
+  var r = Resources;
+  if (r.pad.blockedTower || 
+      r.pad.blockedCreep) {
     return;
   };
-  Resources.pad.placeable = false;
+  r.pad.placeable = false;
   var startX = Handlers.getCorner(event.offsetX, 'x');
   var startY = Handlers.getCorner(event.offsetY, 'y');
   var oX = (startX-1)/20;
   var oY = (startY-1)/20;
+  // check if tower will block path, ugly way will have
+  // to refactor after
+  var towerBlock = [];
+  towerBlock.push([oX, oY])
+  towerBlock.push([oX+1, oY])
+  towerBlock.push([oX, oY+1])
+  towerBlock.push([oX+1, oY+1])
+  var towers = towerBlock.concat(towerBlock, r.blocks)
+  var grid = new PF.Grid(r.x, r.y);
 
+  for(var i=0; i<=towers.length-1; i++) {
+    if (typeof towers[i][0] !== 'undefined' && 
+        typeof towers[i][1] !== 'undefined') {
+      grid.setWalkableAt(towers[i][0], towers[i][1], false);
+    }
+  }
+  var creepPath = r.finder.findPath(0, 0, r.destination.x, r.destination.y, grid);
+  
+  if (creepPath.length === 0) {
+    Handlers.erasePad();
+    r.ctx.top.fillStyle = 'rgba(255, 0, 0, 0.2)';
+    r.ctx.top.fillRect(startX, startY, 39, 39);
+    return;
+  }
+
+  // add new blocks
   var padBlocks = [[oX, oY], [oX+1, oY], [oX, oY+1], [oX+1, oY+1]]
-  Resources.blocks.push([oX, oY])
-  Resources.blocks.push([oX+1, oY])
-  Resources.blocks.push([oX, oY+1])
-  Resources.blocks.push([oX+1, oY+1])
-  allTowers.push(new Tower(padBlocks, startX, startY, Resources.range));
+  r.blocks.push([oX, oY])
+  r.blocks.push([oX+1, oY])
+  r.blocks.push([oX, oY+1])
+  r.blocks.push([oX+1, oY+1])
+  var tower = new Tower(startX, startY, {range: r.range,
+                                         board: 'player',
+                                         blocks: padBlocks})
+  console.log('player', tower);
+  socket.emit('built', tower)
+  allTowers.push(tower);
 
+  // recalculate path
   allCreeps.forEach(function(creep) {
     creep.setPath();
   })
@@ -190,8 +228,8 @@ Handlers.placeTower = function(event) {
   // Resources.ctx.main.fillRect(startX, startY, 39, 39);
   // once the 
   Handlers.erasePad();
-  Resources.ctx.top.fillStyle = 'rgba(255, 0, 0, 0.2)';
-  Resources.ctx.top.fillRect(startX, startY, 39, 39);
+  r.ctx.top.fillStyle = 'rgba(255, 0, 0, 0.2)';
+  r.ctx.top.fillRect(startX, startY, 39, 39);
 
 }
 

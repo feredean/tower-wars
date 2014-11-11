@@ -1,27 +1,42 @@
 #canvas-main {
 	z-index: 0;
     position: absolute;
-    top: 40px;
-    margin-left: auto;
-    margin-right: auto;
-    left: 0;
+    top: 30px;
+    left: 500px;
+    width: 360px;
     right: 0;
 }
 #canvas-top {
 	z-index: 2;
     position: absolute;
-    top: 40px;
-    margin-left: auto;
-    margin-right: auto;
-    left: 0;
+    top: 30px;
+    left: 500px;
+    width: 360px;
     right: 0;
 }
 #canvas-anim {
 	z-index: 1;
     position: absolute;
-    top: 40px;
-    margin-left: auto;
-    margin-right: auto;
-    left: 0;
+    top: 30px;
+    left: 500px;
+    width: 360px;
+    right: 0;
+}
+
+#enemy-main {
+    z-index: 0;
+    position: absolute;
+    top: 30px;
+    left: 100px;
+    width: 360px;
+    right: 0;
+}
+
+#enemy-anim {
+    z-index: 1;
+    position: absolute;
+    top: 30px;
+    left: 100px;
+    width: 360px;
     right: 0;
 }

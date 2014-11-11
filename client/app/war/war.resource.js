@@ -64,6 +64,7 @@ var Resources = {
 
   // Towers
   blocks : [],
+  enemyBlocks : [],
   pad : { 
     started : false,
     blockedTower :false, 

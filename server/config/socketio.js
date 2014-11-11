@@ -18,7 +18,7 @@ function onConnect(socket) {
   });
 
   // Insert sockets below
-  require('../api/thing/thing.socket').register(socket);
+  require('../api/war/war.socket').register(socket);
 }
 
 module.exports = function (socketio) {
@@ -38,6 +38,7 @@ module.exports = function (socketio) {
   // }));
 
   socketio.on('connection', function (socket) {
+
     socket.address = socket.handshake.address !== null ?
             socket.handshake.address.address + ':' + socket.handshake.address.port :
             process.env.DOMAIN;
