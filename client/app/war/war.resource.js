@@ -10,7 +10,7 @@ var Resources = {
   player: {
     hp: 30,
     income: 0,
-    gold: 200
+    gold: 20000000
   },
 
   enemy: {
@@ -36,7 +36,6 @@ var Resources = {
   ajustGold : function(ammount, target) {
     this[target].gold += ammount;
     updateUI();
-    console.log('intra');
   },
   // Grid
   ctx: {},

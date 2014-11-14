@@ -182,10 +182,10 @@ Handlers.placeTower = function(event) {
     return;
   };
   // if you don't have money
-  if (r.player.gold - r.tower[r.towerType].cost < 0) {
-    // needs a render error thing
-    return;
-  }
+  // if (r.player.gold - r.tower[r.towerType].cost < 0) {
+  //   // needs a render error thing
+  //   return;
+  // }
 
   r.pad.placeable = false;
   var startX = Handlers.getCorner(event.offsetX, 'x');
@@ -210,6 +210,7 @@ Handlers.placeTower = function(event) {
   }
   var creepPath = r.finder.findPath(0, 0, r.destination.x, r.destination.y, grid);
   
+  // if new tower blocks all possible paths
   if (creepPath.length === 0) {
     Handlers.erasePad();
     r.ctx.top.fillStyle = 'rgba(255, 0, 0, 0.2)';
@@ -238,7 +239,6 @@ Handlers.placeTower = function(event) {
   allCreeps.forEach(function(creep) {
     creep.setPath();
   })
- 
   // Resources.ctx.main.fillStyle = 'rgb(0,92,9)';
   // Resources.ctx.main.fillRect(startX, startY, 39, 39);
   // once the 

@@ -9,13 +9,13 @@ var updateUI = function() {
 
 var startCountdown = function() {
   var r = Resources;
-  var i = 30;
+  var i = 15;
   setInterval(function() {
-    if (i === 0) {
-      r.player.gold += r.player.income;
-      i = 30;
-    }
     document.getElementById('timer').innerHTML = i;
+    if (i === 0) {
+      r.ajustGold(r.player.income, 'player')
+      i = 15;
+    }
     i -= 1;
   },1000)
 }
@@ -25,6 +25,35 @@ updateUI();
 
 (function() {
   var r = Resources;
+
+  document.addEventListener('keydown', function(e) {
+    switch (e.keyCode) {
+      case 81:
+        sendCreep(r.creeps.one);
+        break;
+      case 87:
+        sendCreep(r.creeps.two);
+        break;
+      case 69:
+        sendCreep(r.creeps.three);
+        break;
+      case 71:
+        sendCreep(r.creeps.god);
+        break;
+      case 65:
+        selectMenu(selectNormalTower, 'normal');
+        break;
+      case 83:
+        selectMenu(selectSpeedTower, 'speed');
+        break;
+      case 68:
+        selectMenu(selectBladeTower, 'blade');
+        break;
+
+    }
+
+  })
+
   // creeps
   var sendOne = document.getElementById('send-one');
   var sendTwo = document.getElementById('send-two');
@@ -81,13 +110,15 @@ updateUI();
     if (r.player.gold - type.cost < 0) {
       return;
     }
-    r.increaseIncome(2, 'player');
+    r.increaseIncome(type.income, 'player');
     r.ajustGold(-type.cost, 'player');
 
     var x = Math.floor(Math.random() * 17);
     var y = Math.floor(Math.random() * 3);
     type.board = 'enemy';
     var creep = new Creep(x, y, type)
+    console.log(creep);
+    
     enemyCreeps.push(creep);
     socket.emit('sent', creep);
   }

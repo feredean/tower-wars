@@ -10,27 +10,6 @@
  * - board - on which it will be spawned
  */
 var Creep = function(x, y, opt) { 
-  // grid
-  var grid = new PF.Grid(Resources.x, Resources.y);
-  this.x = x * 20 + 9;
-  this.y = y * 20 + 9;
-  this.node = [x, y];
-  this.pathPos = 0;
-  // path
-  this.path = Resources.finder.findPath(x, y, Resources.destination.x, Resources.destination.y, grid);
-  this.setPath();
-  // misc
-  this.color = opt.color;
-  this.board = opt.board;
-  this.type = opt.type;
-  this.alive = true;
-  // stats
-  this.health = opt.health;
-  this.speed = opt.speed;
-  this.cost = opt.cost;
-  this.bounty = opt.bounty;
-  this.income = opt.income;
-
   // id
   if (allCreeps.length === 0 && opt.board === 'player') {
     this.id = 'p0';
@@ -42,6 +21,28 @@ var Creep = function(x, y, opt) {
   } else {
     this.id = 'p' + (parseInt(allCreeps[allCreeps.length-1].id.slice(1))+1);
   }
+  
+  // grid
+  var grid = new PF.Grid(Resources.x, Resources.y);
+  this.board = opt.board;
+  this.x = x * 20 + 9;
+  this.y = y * 20 + 9;
+  this.node = [x, y];
+  this.pathPos = 0;
+  // path
+  this.path = Resources.finder.findPath(x, y, Resources.destination.x, Resources.destination.y, grid);
+  this.setPath();
+  // misc
+  this.color = opt.color;
+  this.type = opt.type;
+  this.alive = true;
+  // stats
+  this.health = opt.health;
+  this.speed = opt.speed;
+  this.cost = opt.cost;
+  this.bounty = opt.bounty;
+  this.income = opt.income;
+
 
 };
 
@@ -52,6 +53,8 @@ var Creep = function(x, y, opt) {
 Creep.prototype.setPath = function() {
   var blocks;
   var r = Resources;
+  console.log('setPath: ', this.id, r.blocks);
+  console.log(this.board);
   if (this.board === 'player') {
     blocks = r.blocks;
   } else {
@@ -204,7 +207,6 @@ var enemyCreeps = [];
  * @param {number} range, tower range
  */
 var Tower = function(x, y, opt) {
-  console.log(opt);
   this.x = x+20;
   this.y = y+20;
   this.nodes = opt.blocks;
