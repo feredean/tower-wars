@@ -1,3 +1,28 @@
+var updateUI = function() {
+  var r = Resources;
+  document.getElementById('player-health').innerHTML= r.player.hp;
+  document.getElementById('enemy-health').innerHTML= r.enemy.hp;
+  document.getElementById('player-income').innerHTML= r.player.income;
+  document.getElementById('enemy-income').innerHTML= r.enemy.income;
+  document.getElementById('player-gold').innerHTML= r.player.gold;
+};
+
+var startCountdown = function() {
+  var r = Resources;
+  var i = 30;
+  setInterval(function() {
+    if (i === 0) {
+      r.player.gold += r.player.income;
+      i = 30;
+    }
+    document.getElementById('timer').innerHTML = i;
+    i -= 1;
+  },1000)
+}
+
+setTimeout(startCountdown, 5000);
+updateUI();
+
 (function() {
   var r = Resources;
   // creeps
@@ -53,6 +78,12 @@
 
   // actions
   function sendCreep(type) {
+    if (r.player.gold - type.cost < 0) {
+      return;
+    }
+    r.increaseIncome(2, 'player');
+    r.ajustGold(-type.cost, 'player');
+
     var x = Math.floor(Math.random() * 17);
     var y = Math.floor(Math.random() * 3);
     type.board = 'enemy';

@@ -181,6 +181,12 @@ Handlers.placeTower = function(event) {
       !r.towerType) {
     return;
   };
+  // if you don't have money
+  if (r.player.gold - r.tower[r.towerType].cost < 0) {
+    // needs a render error thing
+    return;
+  }
+
   r.pad.placeable = false;
   var startX = Handlers.getCorner(event.offsetX, 'x');
   var startY = Handlers.getCorner(event.offsetY, 'y');
@@ -222,6 +228,7 @@ Handlers.placeTower = function(event) {
   opts.blocks = padBlocks;
   opts.board = 'player';
 
+  r.ajustGold(-opts.cost, 'player');
   var tower = new Tower(startX, startY, opts)
   
   socket.emit('built', tower)

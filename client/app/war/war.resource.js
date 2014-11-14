@@ -6,6 +6,38 @@
  */
 
 var Resources = {
+  // Player
+  player: {
+    hp: 30,
+    income: 0,
+    gold: 200
+  },
+
+  enemy: {
+    hp: 30,
+    income: 0
+  },
+
+  takeLifePoint: function(target) {
+    this[target].hp -= 1;
+    if(this.player.hp === 0) {
+      Announcement.say('SECOND PLACE');
+    } else if (this.enemy.hp === 0) {
+      Announcement.say('YOU WIN');
+    }
+    updateUI();
+  },
+
+  increaseIncome: function(ammount, target) {
+    this[target].income += ammount;
+    updateUI();
+  },
+
+  ajustGold : function(ammount, target) {
+    this[target].gold += ammount;
+    updateUI();
+    console.log('intra');
+  },
   // Grid
   ctx: {},
 
@@ -60,31 +92,38 @@ var Resources = {
   creeps: {
     one: {
       health: 10,
+      type: 'one',
       color: 'blue',
       speed: 1,
+      bounty: 1,
       cost: 5,
-      income: 1
+      income: 2
     },
     two: {
       health: 30,
+      type: 'two',
       color: 'green',
       speed: 2,
-      cost: 5,
-      income: 1
+      bounty: 15,
+      cost: 15,
+      income: 5
     },
     three: {
       health: 300,
+      type: 'three',
       color: 'red',
       speed: 2,
-      cost: 5,
-      income: 1
+      bounty: 50,
+      cost: 50,
+      income: 50
     },
     god: {
       health: 1000000,
+      type: 'god',
       color: 'black',
       speed: 1,
-      cost: 5,
-      income: 1
+      cost: 5000,
+      income: 0
     },
   },
 
@@ -114,7 +153,7 @@ var Resources = {
       type: 'speed',
       range: 100,
       speed: 50,
-      cost: 20,
+      cost: 50,
       invert: false,
       projectile: {
         size: 2,

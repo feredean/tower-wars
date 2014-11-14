@@ -25,16 +25,19 @@
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
+    <div id="overlay" class="none">
+      <span id="announcement"></span>
+    </div>
     <div class="container">
       
       <div class="enemy">
           <h2>Enemy</h2>
         <div class="info">
           <div>
-            HP: <span>30</span>
+            HP: <span id="enemy-health"></span>
           </div>
           <div>
-            Income: <span> 30g </span>
+            Income: <span id="enemy-income"></span>g
           </div>
 
         </div>
@@ -48,15 +51,16 @@
           <h2>Player</h2>
         <div class="info">
           <div>
-            HP: <span>30</span>
+            HP: <span id="player-health"></span>
           </div>
           <div>
-            Income: <span> 30g </span>
+            Income: <span id="player-income"></span>g
           </div>
           <div>
-            Gold: <span>30g</span>
+            Gold: <span id="player-gold"></span>g
           </div>
-
+          <div style="margin-top:40px">Next income:</div>
+          <div id="timer">Soon</div>
         </div>
         <div class="playgroud">
           <div id="canvas-main"></div>
@@ -148,6 +152,7 @@
       <script src="app/war/war.engine.js"></script>
       <script src="app/war/war.socket.js"></script>
       <script src="app/war/ui.js"></script>
+      <script src="app/war/war.announcements.js"></script>
     <!-- endbuild -->
 </body>
 </html>

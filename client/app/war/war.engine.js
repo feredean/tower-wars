@@ -14,7 +14,7 @@ var Engine = (function(global){
   * Maybe move it into resource?
   */
 
-  // Player
+  // Player 
   var canvasBackground = doc.createElement('canvas');
   var mainCtx = canvasBackground.getContext('2d');
   canvasBackground.width = Resources.width();

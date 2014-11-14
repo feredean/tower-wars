@@ -1,13 +1,5 @@
 'use strict';
 
-var player = {
-  hp: 30,
-  money: 500
-}
-
-
-
-
 /**
  * Creep constructor
  * @param {number} x, spawn x-axis position on matrix
@@ -18,19 +10,28 @@ var player = {
  * - board - on which it will be spawned
  */
 var Creep = function(x, y, opt) { 
+  // grid
   var grid = new PF.Grid(Resources.x, Resources.y);
-  this.color = opt.color;
-  this.board = opt.board;
   this.x = x * 20 + 9;
   this.y = y * 20 + 9;
   this.node = [x, y];
   this.pathPos = 0;
+  // path
   this.path = Resources.finder.findPath(x, y, Resources.destination.x, Resources.destination.y, grid);
   this.setPath();
-  this.health = opt.health;
+  // misc
+  this.color = opt.color;
+  this.board = opt.board;
+  this.type = opt.type;
   this.alive = true;
+  // stats
+  this.health = opt.health;
   this.speed = opt.speed;
+  this.cost = opt.cost;
+  this.bounty = opt.bounty;
+  this.income = opt.income;
 
+  // id
   if (allCreeps.length === 0 && opt.board === 'player') {
     this.id = 'p0';
   } else if (enemyCreeps.length === 0 && opt.board === 'enemy') {
@@ -81,9 +82,17 @@ Creep.prototype.setPath = function() {
  * slows down.
  */
 Creep.prototype.update = function(dt) {
+  var r = Resources;
+  var projectiles;
   // We reached the end of the path, here we stop
   if (this.path.length-1 === this.pathPos) {
-    var projectiles = this.id[0] === 'p' ? allProjectiles : enemyProjectiles;
+    if (this.id[0] === 'p') {
+      r.takeLifePoint('player');
+      projectiles = allProjectiles;
+    } else {
+      r.takeLifePoint('enemy');
+      projectiles = enemyProjectiles;
+    }
     purgeProjectiles(projectiles, this.id);
     this.alive = false;
     return;
@@ -128,17 +137,22 @@ Creep.prototype.update = function(dt) {
 };
 
 Creep.prototype.render = function() {
+  var r = Resources;
   var ctx;
   var start;
   var end;
 
   if (this.board === 'player') {
-    ctx = Resources.ctx.anim;
+    ctx = r.ctx.anim;
   } else {
-    ctx = Resources.ctx.enemyAnim;
+    ctx = r.ctx.enemyAnim;
   } 
+  var hp = (this.health/r.creeps[this.type].health)*20;
 
   ctx.beginPath();
+  ctx.fillStyle = 'green';
+  ctx.fillRect(this.x-10, this.y-11, hp, 3);
+  ctx.fill();
   ctx.arc(this.x, this.y, 6, 0, 2 * Math.PI, false);
   ctx.fillStyle = '#333';
   // ctx.fillText(this.health, this.x+10, this.y);
@@ -160,14 +174,21 @@ Creep.prototype.render = function() {
 };
 
 Creep.prototype.takeDamage = function(damage) {
+  var r = Resources;
   var projectiles;
   this.health -= damage;
   if (this.health <= 0) {
-    console.log('dead');
-    projectiles = this.id[0] === 'p' ? allProjectiles : enemyProjectiles;
+    if (this.id[0] === 'p') {
+      r.ajustGold(this.bounty, 'player');
+      projectiles = allProjectiles;
+    } else {
+      r.ajustGold(this.bounty, 'enemy');
+      projectiles = enemyProjectiles;
+    }
     // delete the projectiles heading for this creep
     purgeProjectiles(projectiles, this.id);
     this.alive = false;
+
   }
 };
 
