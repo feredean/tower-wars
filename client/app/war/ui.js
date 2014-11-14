@@ -117,7 +117,6 @@ updateUI();
     var y = Math.floor(Math.random() * 3);
     type.board = 'enemy';
     var creep = new Creep(x, y, type)
-    console.log(creep);
     
     enemyCreeps.push(creep);
     socket.emit('sent', creep);

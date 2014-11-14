@@ -53,8 +53,6 @@ var Creep = function(x, y, opt) {
 Creep.prototype.setPath = function() {
   var blocks;
   var r = Resources;
-  console.log('setPath: ', this.id, r.blocks);
-  console.log(this.board);
   if (this.board === 'player') {
     blocks = r.blocks;
   } else {
