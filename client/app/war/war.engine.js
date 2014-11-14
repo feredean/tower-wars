@@ -75,8 +75,8 @@ var Engine = (function(global){
   Resources.ctx.enemyAnim = enemyAnimCtx;
 
   function main() {
-    renderGrid(Resources.ctx.main);
-    renderGrid(Resources.ctx.enemyMain);
+    renderPlayerGrid(Resources.ctx.main);
+    renderEnemyGrid(Resources.ctx.enemyMain);
     animate();
   }
 
@@ -95,7 +95,6 @@ var Engine = (function(global){
     // renderTowers();
     //   renderCreeps();
     // }, 333)
-
   }
 
   function init() {
@@ -108,7 +107,8 @@ var Engine = (function(global){
     enemyAnimCtx.clearRect(0, 0, Resources.width(), Resources.height())
     updateCreeps(allCreeps);
     updateCreeps(enemyCreeps);
-    updateProjectiles();
+    updateProjectiles(allProjectiles);
+    updateProjectiles(enemyProjectiles);
   }
 
 
@@ -126,17 +126,16 @@ var Engine = (function(global){
     }
   }
 
-
   /**
    * Draws and updates the position of the projectiles on the 
    * Animation Canvas 
    */  
-  function updateProjectiles(dt) {
-    for (var i=0; i<=allProjectiles.length-1; ++i) {
-      if (allProjectiles[i].alive) {
-        allProjectiles[i].update();
+  function updateProjectiles(projectiles) {
+    for (var i=0; i<=projectiles.length-1; ++i) {
+      if (projectiles[i].alive) {
+        projectiles[i].update();
       } else {
-        allProjectiles.splice(i,1);
+        projectiles.splice(i,1);
       }
     }
   }
@@ -145,7 +144,7 @@ var Engine = (function(global){
   /**
    * Creates a grid
    */
-  function renderGrid(ctx) {
+  function renderPlayerGrid(ctx) {
     var row;
     var col;
     ctx.strokeStyle = '#CCC';
@@ -170,7 +169,33 @@ var Engine = (function(global){
     ctx.fillRect(1,1,Resources.x*20-1, 3*20-1)
     ctx.fillRect(Resources.arriveZone().start.x * 20 + 1, 
                 Resources.arriveZone().start.y * 20 + 1, 59,59)
+  }
 
+  function renderEnemyGrid(ctx) {
+    var row;
+    var col;
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 1;
+
+    ctx.beginPath();
+    ctx.moveTo( 0 + 0.5, 0*20 + 0.5);
+    ctx.lineTo( 600 + 0.5, 0*20 + 0.5);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo( 0*20 + 0.5, 0 + 0.5);
+    ctx.lineTo( 0*20 + 0.5, 600 + 0.5);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo( 0 + 0.5, Resources.y*20 + 0.5);
+    ctx.lineTo( 600 + 0.5, Resources.y*20 + 0.5);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo( Resources.x*20 + 0.5, 0 + 0.5);
+    ctx.lineTo( Resources.x*20 + 0.5, 600 + 0.5);
+    ctx.stroke();
   }
 
   function renderCreeps() {
@@ -180,7 +205,6 @@ var Engine = (function(global){
     enemyCreeps.forEach(function(creep) {
       creep.render()
     })
-
   }
 
   function renderTowers() {

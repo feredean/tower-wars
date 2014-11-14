@@ -25,23 +25,104 @@
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
+    <div class="container">
+      
+      <div class="enemy">
+          <h2>Enemy</h2>
+        <div class="info">
+          <div>
+            HP: <span>30</span>
+          </div>
+          <div>
+            Income: <span> 30g </span>
+          </div>
 
-    <div id="add-creep">+1</div>
-    <div id="clear-towers">Clear</div>
-    <div class="players">
-      <div id="canvas-main">
+        </div>
+        <div class="playgroud">
+          <div id="enemy-main"></div>
+          <div id="enemy-anim"></div>
+        </div>
       </div>
-      <div id="canvas-top">
+      
+      <div class="player">
+          <h2>Player</h2>
+        <div class="info">
+          <div>
+            HP: <span>30</span>
+          </div>
+          <div>
+            Income: <span> 30g </span>
+          </div>
+          <div>
+            Gold: <span>30g</span>
+          </div>
+
+        </div>
+        <div class="playgroud">
+          <div id="canvas-main"></div>
+          <div id="canvas-top"></div>
+          <div id="canvas-anim"></div>
+        </div>
       </div>
-      <div id="canvas-anim">
+      
+      <div class="controls">
+        <div class="action" id="send-one">
+          <div class="title"> 
+            Send slow creep <span class="cost"> (5g)</span>
+          </div>
+          <div class="hp"> HP: 10</div>
+          <div class="income"> +1 Income</div>
+        </div>
+        <div class="action" id="send-two">
+          <div class="title"> 
+            Send fast creep <span class="cost"> (15g)</span>
+          </div>
+          <div class="hp"> HP: 30</div>
+          <div class="income"> +2 Income</div>
+        </div>
+        <div class="action" id="send-three">
+          <div class="title"> 
+            Send monster <span class="cost"> (50g)</span>
+          </div>
+          <div class="hp"> HP: 300</div>
+          <div class="income"> +10 Income</div>
+        </div>
+        <div class="action" id="send-god">
+          <div class="title"> 
+            Send GOD <span class="cost"> (5000g)</span>
+          </div>
+          <div class="hp"> HP: 1000000</div>
+        </div>
+        <div class="action" id="normal-tower">
+          <div class="title"> 
+            Build Tower <span class="cost"> (20g)</span>
+          </div>
+          <div class="hp"> DMG: 5</div>
+          <div class="income"> Reload: 1 sec</div>
+        </div>
+        <div class="action" id="speed-tower">
+          <div class="title"> 
+            Build Speed Tower <span class="cost"> (50g)</span>
+          </div>
+          <div class="hp"> DMG: 3</div>
+          <div class="income"> Reload: 0.2 sec</div>
+        </div>
+        <div class="action" id="blade-tower">
+          <div class="title"> 
+            Build Blade Tower <span class="cost"> (100g)</span>
+          </div>
+          <div class="hp"> DMG: 5 AOE</div>
+          <div class="income"> Pulse: 0.01 sec</div>
+        </div>
+
+        
+        
+
+        <!-- <div class="action" id="clear-towers">Clear</div> -->
       </div>
+      
     </div>
-    <div class="players">
-      <div id="enemy-main">
-      </div>
-      <div id="enemy-anim">
-      </div>
-    </div>
+
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
     <script>

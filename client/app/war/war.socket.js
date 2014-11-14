@@ -2,15 +2,17 @@ var socket = io.connect();
 var r = Resources;
 
 socket.on('enemySent', function(data) {
-  var creep = new Creep(data.x, data.y, {board: 'player'})
+  data.board = 'player';
+  // transform x, y from px to grid location
+  var creep = new Creep((data.x-9)/20, (data.y-9)/20, data)
+  console.log('Received creep: ', data);
   allCreeps.push(creep);
 })
 
 socket.on('enemyBuilt', function(data) {
+  data.board = 'enemy';
   // anti centering.. 
-  var tower = new Tower(data.x-20, data.y-20, {range: r.range,
-                                         board: 'enemy',
-                                         blocks: data.nodes});
+  var tower = new Tower(data.x-20, data.y-20, data);
 
   data.nodes.forEach(function(block) {
     Resources.enemyBlocks.push(block);

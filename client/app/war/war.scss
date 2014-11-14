@@ -1,42 +1,91 @@
-#canvas-main {
-	z-index: 0;
+.container {
+    /*margin: 0 auto;*/
+    margin: 0;
+    color: #333;
+}
+
+.enemy {
     position: absolute;
-    top: 30px;
+    top: 25px;
+    width: 461px;
+    height: 601px;
+    display: inline-block;
+}
+
+.player {
+    position: absolute;
     left: 500px;
-    width: 360px;
-    right: 0;
+    top: 25px;
+    width: 461px;
+    height: 601px;
+    display: inline-block;
+}
+
+.controls {
+    position: absolute;
+    right: 0px;
+}
+
+.info {
+    position: absolute;
+    padding: 50px 0 0 10px;
+}
+
+.action {
+    width: 200px;
+    border: 1px solid #DDD;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.select {
+    background-color: #DDD;
+}
+
+.action .title {
+    font-weight: bold;
+}
+
+#canvas-main {
+    z-index: 0;
+    left: 120px;
+    top: 0px;
+    position: absolute;
 }
 #canvas-top {
-	z-index: 2;
+    z-index: 2;
+    left: 120px;
+    top: 0px;
     position: absolute;
-    top: 30px;
-    left: 500px;
-    width: 360px;
-    right: 0;
 }
 #canvas-anim {
-	z-index: 1;
+    z-index: 1;
+    left: 120px;
+    top: 0px;
     position: absolute;
-    top: 30px;
-    left: 500px;
-    width: 360px;
-    right: 0;
 }
 
 #enemy-main {
     z-index: 0;
+    left: 120px;
+    top: 0px;
     position: absolute;
-    top: 30px;
-    left: 100px;
-    width: 360px;
-    right: 0;
 }
 
 #enemy-anim {
     z-index: 1;
+    left: 120px;
+    top: 0px;
     position: absolute;
-    top: 30px;
-    left: 100px;
-    width: 360px;
-    right: 0;
+}
+
+#normal-tower {
+    margin-top: 80px;
 }

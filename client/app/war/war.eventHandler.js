@@ -75,6 +75,9 @@ Handlers.getCorner = function(point, axis) {
  * @param {object} event
  */  
 Handlers.drawPad = function(e) {
+  var r = Resources;
+
+  if (!r.towerType) return;
 
   var x = e.offsetX;
   var y = e.offsetY;
@@ -83,7 +86,6 @@ Handlers.drawPad = function(e) {
   var oX = (cornerX-1)/20;
   var oY = (cornerY-1)/20;
   var block;
-  var r = Resources;
 
   var spawnEnd = r.spawnZone().end;
   var arriveStart = r.arriveZone().start;
@@ -172,8 +174,11 @@ Handlers.creepBlock = function() {
  */
 Handlers.placeTower = function(event) {
   var r = Resources;
+  // if tower is blocked by tower or creep return
+  // if there isn't a tower type selected, return
   if (r.pad.blockedTower || 
-      r.pad.blockedCreep) {
+      r.pad.blockedCreep ||
+      !r.towerType) {
     return;
   };
   r.pad.placeable = false;
@@ -212,10 +217,13 @@ Handlers.placeTower = function(event) {
   r.blocks.push([oX+1, oY])
   r.blocks.push([oX, oY+1])
   r.blocks.push([oX+1, oY+1])
-  var tower = new Tower(startX, startY, {range: r.range,
-                                         board: 'player',
-                                         blocks: padBlocks})
-  console.log('player', tower);
+
+  var opts = r.tower[r.towerType];
+  opts.blocks = padBlocks;
+  opts.board = 'player';
+
+  var tower = new Tower(startX, startY, opts)
+  
   socket.emit('built', tower)
   allTowers.push(tower);
 
