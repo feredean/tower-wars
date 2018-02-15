@@ -1,6 +1,3 @@
-'use strict';
-
-console.log('test');
 exports.register = function(socket) {
 
   socket.on('sent', function(data) {

@@ -1,11 +1,3 @@
-/**
- * Socket.io configuration
- */
-
-'use strict';
-
-var config = require('./environment');
-
 // When the user disconnects.. perform this
 function onDisconnect(socket) {
 }
@@ -48,11 +40,11 @@ module.exports = function (socketio) {
     // Call onDisconnect.
     socket.on('disconnect', function () {
       onDisconnect(socket);
-      console.info('[%s] DISCONNECTED', socket.address);
+      console.info(`${socket.address} DISCONNECTED`, socket.address);
     });
 
     // Call onConnect.
     onConnect(socket);
-    console.info('[%s] CONNECTED', socket.address);
+    console.info(`${socket.address} CONNECTED`, socket.address);
   });
 };
