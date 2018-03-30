@@ -29,7 +29,7 @@
       <span id="announcement"></span>
     </div>
     <div class="container">
-      
+
       <div class="enemy">
           <h2>Enemy</h2>
         <div class="info">
@@ -46,7 +46,7 @@
           <div id="enemy-anim"></div>
         </div>
       </div>
-      
+
       <div class="player">
           <h2>Player</h2>
         <div class="info">
@@ -68,77 +68,66 @@
           <div id="canvas-anim"></div>
         </div>
       </div>
-      
+
       <div class="controls">
         <div class="action" id="send-one">
-          <div class="title"> 
+          <div class="title">
             Q - Send slow creep <span class="cost"> (5g)</span>
           </div>
           <div class="hp"> HP: 10</div>
           <div class="income"> +2 Income</div>
         </div>
         <div class="action" id="send-two">
-          <div class="title"> 
+          <div class="title">
             W - Send fast creep <span class="cost"> (15g)</span>
           </div>
           <div class="hp"> HP: 30</div>
           <div class="income"> +2 Income</div>
         </div>
         <div class="action" id="send-three">
-          <div class="title"> 
+          <div class="title">
             E - Send monster <span class="cost"> (50g)</span>
           </div>
           <div class="hp"> HP: 300</div>
           <div class="income"> +10 Income</div>
         </div>
         <div class="action" id="send-god">
-          <div class="title"> 
+          <div class="title">
             G - Send GOD <span class="cost"> (5000g)</span>
           </div>
           <div class="hp"> HP: 1000000</div>
         </div>
         <div class="action" id="normal-tower">
-          <div class="title"> 
+          <div class="title">
             A - Tower <span class="cost"> (20g)</span>
           </div>
           <div class="hp"> DMG: 5</div>
           <div class="income"> Reload: 1 sec</div>
         </div>
         <div class="action" id="speed-tower">
-          <div class="title"> 
+          <div class="title">
             S - Speed Tower <span class="cost"> (50g)</span>
           </div>
           <div class="hp"> DMG: 3</div>
           <div class="income"> Reload: 0.2 sec</div>
         </div>
         <div class="action" id="blade-tower">
-          <div class="title"> 
+          <div class="title">
             D - Blade Tower <span class="cost"> (100g)</span>
           </div>
           <div class="hp"> DMG: 5 AOE</div>
           <div class="income"> Pulse: 0.01 sec</div>
         </div>
 
-        
-        
+
+
 
         <!-- <div class="action" id="clear-towers">Clear</div> -->
       </div>
-      
+
     </div>
 
-
-    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-      ga('create', 'UA-XXXXX-X');
-      ga('send', 'pageview');
-    </script>
-    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
 
     <!--[if lt IE 9]>
     <script src="bower_components/es5-shim/es5-shim.js"></script>
